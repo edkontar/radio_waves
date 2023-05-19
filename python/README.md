@@ -1,7 +1,7 @@
 ## Scattered Image Plot
 
 Python function to plot 2D Gaussian representing an apparent radio source due to anisotropic radio-wave scattering.
-Source size and position taken from rays_swind.pro simulation results, and interpolated at input frequency.
+Source size and position taken from rays_swind.pro simulation results stored within "new_all_results_F_final.sav", and interpolated at input frequency.
 
 **Example:**  
 ```
