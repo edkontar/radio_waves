@@ -6,7 +6,7 @@ Source size and position taken from rays_swind.pro simulation results stored wit
 **Example:**  
 ```
 from scattering_image_funcs import anis_scat_image  
-anis_scat_image(30, 1.0, 0.25, 3000, 30)  
+anis_scat_image(f=30, eps=1.0, anis=0.25, xmax=3000, th=30)  
 ```  
 
 Set the desired parameters above to generate a simulated 2D Gaussian representing a scattered image
@@ -20,3 +20,6 @@ eps0: Scattering strength factor (possible values of 0.5, 0.71, 1.0, 1.41 ,2.0).
 anis0: Anisotropy factor of the density fluctuation spectrum (possible values of 0.19, 0.25, 0.33, 0.42) where 1.0 is isotropic.  
 Max plot range: Adjust the maximum x, y range.  
 Source heliocentric angle: Change the initial source azimuthal angle from -60 to 60 degrees (0 degrees is the disk centre). 
+
+If the above keyword arguments are not provided, the default value will be used:
+f=30, eps=1.0, anis=0.25, xmax=3000, th=30
