@@ -15,16 +15,11 @@ def anis_scat_image(**params):
     """
     
     # Set parameters
-    if len(params) == 0:
-        f, eps, anis, xmax, th = 30, 1.0, 0.25, 3000, 30
-    elif len(params) == 5:
-        f, eps, anis, xmax, th = params.values()
-    else:
-        f=30 if 'f' not in params else params['f']
-        eps=1.0 if 'eps' not in params else params['eps']
-        anis=0.25 if 'anis' not in params else params['anis']
-        xmax=3000 if 'xmax' not in params else params['xmax']
-        th=30 if 'th' not in params else params['th']
+    f=30 if 'f' not in params else params['f']
+    eps=1.0 if 'eps' not in params else params['eps']
+    anis=0.25 if 'anis' not in params else params['anis']
+    xmax=3000 if 'xmax' not in params else params['xmax']
+    th=30 if 'th' not in params else params['th']
 
     # Check data file exists
     from os.path import exists
