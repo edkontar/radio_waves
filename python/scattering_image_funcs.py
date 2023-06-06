@@ -1,17 +1,31 @@
-def anis_scat_image(f = 30, eps0 = 1.0, anis0 = 0.25, xmax = 3000, th = 30):
+def anis_scat_image(**params):
     """
-    Set the desired parameters above to generate a simulated 2D Gaussian representing a scattered image
+    Set the desired parameter kwargs, e.g.
+    f=30, eps=1, anis=0.25, xmax=3000, th=30
+    to generate a simulated 2D Gaussian representing a scattered image
     based on ansiotropic radio-wave propagation simulation results. The resulting contours show the
     50%, 70%, and 90% contour levels. The black cross denotes the initial source location in the sky-plane
     and the black cross shows the scattered image centroid.
     The parameters are defined as:
     f: Observed frequency in MHz.
-    eps0: Scattering strength factor (possible values of 0.5, 0.71, 1.0, 1.41 ,2.0).
-    anis0: Anisotropy factor of the density fluctuation spectrum (possible values of 0.19, 0.25, 0.33, 0.42) where 1.0 is isotropic.
+    eps: Scattering strength factor (possible values of 0.5, 0.71, 1.0, 1.41 ,2.0).
+    anis: Anisotropy factor of the density fluctuation spectrum (possible values of 0.19, 0.25, 0.33, 0.42) where 1.0 is isotropic.
     Max plot range: Adjust the maximum x, y range.
     Source heliocentric angle: Change the initial source azimuthal angle from -60 to 60 degrees (0 degrees is the disk centre). 
     """
     
+    # Set parameters
+    if len(params) == 0:
+        f, eps, anis, xmax, th = 30, 1.0, 0.25, 3000, 30
+    elif len(params) == 5:
+        f, eps, anis, xmax, th = params.values()
+    else:
+        f=30 if 'f' not in params else params['f']
+        eps=1.0 if 'eps' not in params else params['eps']
+        anis=0.25 if 'anis' not in params else params['anis']
+        xmax=3000 if 'xmax' not in params else params['xmax']
+        th=30 if 'th' not in params else params['th']
+
     # Check data file exists
     from os.path import exists
     file = 'new_all_results_F_final.sav'
@@ -19,7 +33,7 @@ def anis_scat_image(f = 30, eps0 = 1.0, anis0 = 0.25, xmax = 3000, th = 30):
     if file_exists == True:
             
         # check for valid user input
-        if (eps0 in [0.5,0.71,1.0,1.41,2.0]) and (anis0 in [0.19,0.25,0.33,0.42]) and (0.1 <= f <= 340): 
+        if (eps in [0.5,0.71,1.0,1.41,2.0]) and (anis in [0.19,0.25,0.33,0.42]) and (0.1 <= f <= 340): 
 
             import numpy as np
             import matplotlib.pyplot as plt
@@ -52,18 +66,15 @@ def anis_scat_image(f = 30, eps0 = 1.0, anis0 = 0.25, xmax = 3000, th = 30):
             fmhz = np.array(data['sims'][0][2])
             r_shift = np.array(data['sims'][0][3])
             s_fwhm = np.array(data['sims'][0][4])
-            eps = np.array(data['sims'][0][5])
-            asym = np.array(data['sims'][0][6])
-            anis = np.array(data['sims'][0][7])
-            f_ratio = np.array(data['sims'][0][8])
-            t_1e_fit = np.array(data['sims'][0][9])
+            eps0 = np.array(data['sims'][0][5])
+            anis0 = np.array(data['sims'][0][7])
             t_1e_after = np.array(data['sims'][0][10])
             t_peak = np.array(data['sims'][0][11])
 
             th = np.deg2rad(th)
 
             # retrieve data for eps, alpha
-            idx = np.where((eps == eps0) & (anis == anis0))
+            idx = np.where((eps0 == eps) & (anis0 == anis))
             fmhz = fmhz[idx]
             r_init = r_init[idx]
             r_shift = r_shift[idx]
@@ -147,16 +158,29 @@ def anis_scat_image(f = 30, eps0 = 1.0, anis0 = 0.25, xmax = 3000, th = 30):
             plt.scatter(xc_init, 0, marker='x', s=20, color='k', linewidths=0.7)
             plt.plot(r_sun*np.cos(sun), r_sun*np.sin(sun), 'w')
 
-            plt.text(0.05, 0.95, r'A  = {:.1f} arcmin$^2$'.format(A), color='w', ha='left', va='top', transform=ax.transAxes)
-            plt.text(0.05, 0.90, r'$x_0$ = {:.1f} arcsec'.format(xc_init), color='w', ha='left', va='top', transform=ax.transAxes)
-            #plt.text(0.05, 0.85, r'$y_0$ = {:.1f} arcsec'.format(0), color='w', ha='left', va='top', transform=ax.transAxes)
-            plt.text(0.05, 0.85, r'$x_c$ = {:.1f} arcsec'.format(xc), color='w', ha='left', va='top', transform=ax.transAxes)
-            #plt.text(0.05, 0.75, r'$y_c$ = {:.1f} arcsec'.format(yc), color='w', ha='left', va='top', transform=ax.transAxes)
-            plt.text(0.05, 0.80, r'$\Delta r$ = {:.1f} arcsec ({:.2f} R$_\odot$)'.format(dr, dr/r_sun), color='w', ha='left', va='top', transform=ax.transAxes)
+            if A > 1e4:
+                plt.text(0.05, 0.95, r'A  = {:.1e} arcmin$^2$'.format(A), color='w', ha='left', va='top', transform=ax.transAxes)
+            else:
+                plt.text(0.05, 0.95, r'A  = {:.0f} arcmin$^2$'.format(round(A,-1)), color='w', ha='left', va='top', transform=ax.transAxes)
+
+            if xc_init > 1e4:
+                plt.text(0.05, 0.90, r'$x_0$ = {:.1e} arcsec'.format(xc_init), color='w', ha='left', va='top', transform=ax.transAxes)
+            else:
+                plt.text(0.05, 0.90, r'$x_0$ = {:.0f} arcsec'.format(round(xc_init,-1)), color='w', ha='left', va='top', transform=ax.transAxes)
+
+            if xc > 1e4:
+                plt.text(0.05, 0.85, r'$x_c$ = {:.1e} arcsec'.format(xc), color='w', ha='left', va='top', transform=ax.transAxes)
+            else:
+                plt.text(0.05, 0.85, r'$x_c$ = {:.0f} arcsec'.format(round(xc,-1)), color='w', ha='left', va='top', transform=ax.transAxes)
+
+            if dr > 1e4:
+                plt.text(0.05, 0.80, r'$\Delta r$ = {:.1e} arcsec ({:.2f} R$_\odot$)'.format(dr, dr/r_sun), color='w', ha='left', va='top', transform=ax.transAxes)
+            else:
+                plt.text(0.05, 0.80, r'$\Delta r$ = {:.0f} arcsec ({:.2f} R$_\odot$)'.format(round(dr,-1), dr/r_sun), color='w', ha='left', va='top', transform=ax.transAxes)
 
             plt.text(0.95, 0.95, r'f = {:.2f} MHz'.format(f), color='w', ha='right', va='top', transform=ax.transAxes)
-            plt.text(0.95, 0.90, r'$\alpha$ = {:.2f}'.format(anis0), color='w', ha='right', va='top', transform=ax.transAxes)
-            plt.text(0.95, 0.85, r'$\epsilon$ = {:.2f}'.format(eps0), color='w', ha='right', va='top', transform=ax.transAxes)
+            plt.text(0.95, 0.90, r'$\alpha$ = {:.2f}'.format(anis), color='w', ha='right', va='top', transform=ax.transAxes)
+            plt.text(0.95, 0.85, r'$\epsilon$ = {:.2f}'.format(eps), color='w', ha='right', va='top', transform=ax.transAxes)
 
 
             plt.xlabel('X [arcsec]')
