@@ -42,7 +42,7 @@ Note: Flask requires Python 3.8 or newer.
 	> ./.venv/bin/activate
 ```
 
-Note: the shell should update to show the name of the activate environment.
+Note: the shell should update to show the name of the active environment.
 
 3. Install Flask and additional libraries:
 
