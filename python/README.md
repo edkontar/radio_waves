@@ -23,3 +23,45 @@ Source heliocentric angle: Change the initial source azimuthal angle from -60 to
 
 If the above keyword arguments are not provided, the default value will be used:
 f=30, eps=1.0, anis=0.25, xmax=3000, th=30
+
+## Run the app on localhost using Flask
+
+Note: Flask requires Python 3.8 or newer.
+
+1. Create a project environment using the Python venv module:
+
+```
+	> mkdir radio_scat_image
+	> cd radio_scat_image
+	> python -m venv .venv
+```
+
+2. Activate the enivironment:
+
+```
+	> ./.venv/bin/activate
+```
+
+Note: the shell should update to show the name of the activate environment.
+
+3. Install Flask and additional libraries:
+
+```
+	> pip install Flask
+	> pip install numpy
+	> pip install scipy
+	> pip install matplotlib
+```
+
+4. Create the Flask app directory:
+
+	Download the 'flask_app' folder and its contents and place in the /radio_scat_image directory.
+
+5. Start the Flask app on the localhost server:
+
+```
+	> cd flask_app
+	> flask --app init run
+```
+
+6. Run the app in a web browser by opening 127.0.0.1:5000.
