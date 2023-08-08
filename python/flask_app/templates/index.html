@@ -1,0 +1,91 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simulated Anisotropic Scattering Image</title>
+    <meta name="description" content="Plot a simulated solar radio burst image based on anisotropic scattering.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+
+<div class = "main">
+
+<h1>Simulated Anisotropic Scattering Image</h1>
+
+<form id = 'myForm' action="/get_plot" method= "POST">
+
+    <label>
+        Frequency (MHz): <input type = "range" name = "f" placeholder = "MHz" value = "30" min = "0.1" max = "340" step = "0.1" required oninput = "this.nextElementSibling.value = this.value"/>
+        <output>30</output> MHz
+    </label>
+
+    <label>
+        Epsilon factor: 
+        <select id="eps0" name="eps0">
+            <option value="0.5">0.5</option>
+            <option value="0.70921987">0.71</option>
+            <option value="1.0", selected="selected">1.0</option>
+            <option value="1.41">1.41</option>
+        </select>
+    </label>
+    
+    <label>
+        Anisotropy: 
+        <select id="anis0" name="anis0">
+            <option value="0.19">0.19</option>
+            <option value="0.25", selected="selected">0.25</option>
+            <option value="0.33">0.33</option>
+            <option value="0.42">0.42</option>
+        </select>
+    </label>
+
+    <label>
+        Max plot range (arcsec): <input type = "number" name = "xmax" placeholder = "arcsec" value = "3000" min = "1000" required/>
+    </label>
+
+    <label>
+        Source heliocentric angle (degrees): <input type = "range" name = "th" placeholder = "degrees" value = "30" min = "-60" max = "60" step = "1" required oninput = "this.nextElementSibling.value = this.value"/><output>30</output> deg  
+    </label>
+
+    <input class = "button" type = "submit" value = Plot />
+    <input class = "button" type = "button" onclick = "reset()" value = "Reset">
+
+</form>
+
+<script>
+    function reset(){
+        document.getElementById("myForm").reset();
+    }
+</script>
+
+{% if plot_url %}
+    <img src = {{plot_url}} alt = "Plot cannot be displayed", height="600">
+    <form method = "get" action = {{plot_url}}>
+        <input class = "button" type = "submit" value = "Save PNG">
+    </form>
+    <form method = "get" action = "{{ url_for('static', filename='UoG_colour.png') }}">
+        <input class = "button" type = "submit" value = "Save EPS">
+    </form>
+{% endif %}
+
+<p>
+    Set the desired parameters above to generate a simulated 2D Gaussian representing a scattered image
+    based on ansiotropic radio-wave propagation simulation results. The resulting contours show the
+    50%, 70%, and 90% contour levels. The black cross denotes the initial source location in the sky-plane
+    and the black cross shows the scattered image centroid.
+</p>
+<p>
+    The parameters are defined as:<br>
+    <span class = "param">Frequency:</span> Observed frequency in MHz.<br>
+    <span class = "param">Epsilon factor:</span> Scattering strength factor (e.g. 0.5 is half the default).<br>
+    <span class = "param">Anisotropy:</span> Anisotropy factor of the density fluctuation spectrum (1.0 is isotropic).<br>
+    <span class = "param">Max plot range:</span> Adjust the maximum <i>x, y</i> range.<br>
+    <span class = "param">Source heliocentric angle:</span> Change the initial source azimuthal angle from -60 to 60 degrees (0 degrees is the disk centre).
+</p>
+
+</div>
+</body>
+</html>

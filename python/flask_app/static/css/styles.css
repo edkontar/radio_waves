@@ -1,0 +1,48 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  padding-left: 10px;
+  margin: 30px;
+}
+
+.main {
+  max-width: 700px;
+  margin: auto;
+}
+
+h1 {
+  font-size: 22px;
+  margin-bottom: 25px;
+  color: #003865;
+}
+
+img.logo {
+  width: 200px;
+  margin-bottom: 25px;
+}
+
+p {
+  line-height: 25px;
+}
+
+span.param {
+  color: #003865;
+  font-style: italic;
+}
+
+label, input {
+  display: block;
+}
+
+label {
+  margin-bottom: 10px;
+}
+
+input {
+  width: 200px;
+}
+
+input.button {
+  display: inline;
+  width: 125px;
+}
