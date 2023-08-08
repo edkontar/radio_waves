@@ -23,7 +23,7 @@ def anis_scat_image(**params):
 
     # Check data file exists
     from os.path import exists
-    file = 'new_all_results_F_final.sav'
+    file = 'sim_data.sav'
     file_exists = exists(file)
     if file_exists == True:
             
