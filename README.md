@@ -10,4 +10,7 @@ IDL>ray_new, eps=0.1, anis=0.1, r_init=1.75, asym=1., f_ratio=1.1
 
 updated June 2022
 
+Python version by D. Clarkson https://github.com/edkontar/radio_waves/commits?author=d-clarkson
+
+
 
