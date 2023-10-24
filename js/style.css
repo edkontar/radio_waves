@@ -1,0 +1,99 @@
+.container {
+
+}
+
+#inputForm {
+    margin: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#frequencyValue {
+    font-family: Arial, Helvetica, sans-serif;
+    position: absolute;
+    top: 30px;
+    left: 180px;
+}
+
+#helioAngleValue {
+    font-family: Arial, Helvetica, sans-serif;
+    position: absolute;
+    top: 197px;
+    left: 287px;
+}
+
+#imageDiv {
+    position: absolute;
+    left: 380px;
+    top: 35px;
+    padding: 0px;
+    z-index: 1;
+}
+
+#decayDiv {
+    position: absolute;
+    top: 450px;
+    left: 875px;
+}
+
+#posDiv {
+    position: absolute;
+    top: 450px;
+    left: 380px;
+    padding-bottom: 100px;
+}
+
+#sizeFreqDiv {
+    position: absolute;
+    top: 35px;
+    left: 875px;
+    padding-bottom: 100px;
+    z-index: 1;
+}
+
+h1 {
+    margin-bottom: 50px;
+}
+
+footer {
+    position: fixed;
+    font-family: "Arial";
+    font-size: 10pt;
+    color: rgb(58, 58, 58);
+    background: rgba(185, 185, 185, 0.5); /* Adjust the color and alpha (0.5) as needed */
+    text-align: center;
+    padding: 10px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+@media screen and (max-width: 768px) {
+    #imageDiv {
+        left: 10px;
+        top: 250px;
+        width: 50%;
+        z-index: 2;
+    }
+    
+    #posDiv {
+        left: 15px;
+        top: 650px;
+        z-index: 1;
+    }
+
+    #sizeFreqDiv {
+        left: 10px;
+        top: 1050px;
+    }
+
+    #decayDiv {
+        left: 10px;
+        top: 1450px;
+        padding-bottom: 50px;
+    }
+
+    footer {
+        z-index: 3;
+    }
+    
+}
