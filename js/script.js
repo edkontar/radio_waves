@@ -506,7 +506,7 @@ function plotGraphs() {
         showline: true,
       },
       yaxis: {
-        title: 'FWHM Major "Size [degrees]',
+        title: 'FWHM Major Size [degrees]',
         type: 'log',
         dtick: 1, // show only powers of 10 labels
         ticks: 'inside',
