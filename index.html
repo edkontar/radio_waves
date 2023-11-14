@@ -10,8 +10,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
     <script>MathJax = {tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]}, svg: {fontCache: 'global'}};</script> <!-- inline latex with mathjax -->
-    <script type="text/javascript" src="js/data.js?v=6"></script> <!-- load data -->
-    <link rel="stylesheet" href="js/style.css?v=6">
+    <script type="text/javascript" src="data_F.js"></script> <!-- load data -->
+    <script type="text/javascript" src="data_H.js"></script> <!-- load data -->
+    <link rel="stylesheet" href="style.css?v=6">
 </head>
 
 <body>
@@ -24,7 +25,7 @@
     <form id="inputForm">
         
         <label for="frequency">Frequency [MHz]:</label>
-        <input type="number" id="frequency" style="width: 60px;" min="0.1" max="340" name="frequency" step="0.1" required value="30">
+        <input type="number" id="frequency" style="width: 60px;" min="0.2" max="340" name="frequency" step="0.1" required value="30" oninput="validateFrequencyInput(this)">
         <br><br>
         <label for="epsilon">$\overline{qe^2}$ factor:</label>
         <select id="epsilon" name="epsilon">
@@ -45,14 +46,21 @@
 
         <label for="helioAngle">Source Heliocentric Angle [deg]:</label>
         <input type="range" id="helioAngle" style="width: 100px;" min=-50 max=50 name="helioAngle" step="5" required value="0"><br><br>
-    </form>
+    
+        <input type="checkbox" id="checkbox1" name="checkboxGroup" onclick="toggleCheckbox(this)" checked>
+        <label for="checkbox1">Fundamental</label><br>
+
+        <input type="checkbox" id="checkbox2" name="checkboxGroup" onclick="toggleCheckbox(this)">
+        <label for="checkbox2">Harmonic</label><br><br>
+    
+      </form>
     
     <div id="imageDiv"></div>
     <div id="sizeFreqDiv"></div>
     <div id="posDiv"></div>
     <div id="decayDiv"></div>
 
-    <script type="text/javascript" src="js/script.js?v=6"></script>
+    <script type="text/javascript" src="script.js?v=6"></script>
 
   </div>
 
