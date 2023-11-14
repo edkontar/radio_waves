@@ -1,3 +1,50 @@
+function validateFrequencyInput(input) {
+  // Parse the input value as a floating-point number
+  const enteredValue = parseFloat(input.value);
+
+  // Check if the entered value is less than the minimum allowed
+  if (enteredValue < parseFloat(input.min)) {
+    input.setCustomValidity('Value must be greater than or equal to ' + input.min);
+  } else {
+    input.setCustomValidity('');
+  }
+}
+
+// JavaScript function to toggle checkboxes
+function toggleCheckbox(checkbox) {
+  var checkboxes = document.getElementsByName(checkbox.name);
+  checkboxes.forEach(function (item) {
+    if (item !== checkbox) {
+      item.checked = false;
+    }
+  });
+}
+
+// Function to get the appropriate array based on the checkbox status
+function getArraysBasedOnCheckbox() {
+  if (document.getElementById('checkbox1').checked) {
+    return {
+      fmhz: fmhz_F,
+      eps: eps_F,
+      anis: anis_F,
+      r_init: r_init_F,
+      r_shift: r_shift_F,
+      s_fwhm: s_fwhm_F,
+      t_1e_decay: t_1e_decay_F,
+    };
+  } else {
+    return {
+      fmhz: fmhz_H,
+      eps: eps_H,
+      anis: anis_H,
+      r_init: r_init_H,
+      r_shift: r_shift_H,
+      s_fwhm: s_fwhm_H,
+      t_1e_decay: t_1e_decay_H,
+    };
+  }
+}
+
 // Generate 1D arrays
 function range(start, end, numElements) {
   const nums = [];
@@ -117,8 +164,33 @@ function plotGraphs() {
 
   // Set a new timeout to run the function after 1000ms (1 second)
   debounceTimeout = setTimeout(function () {
+
+    const frequencyInput = document.getElementById("frequency");
+    // Parse the entered frequency value
+    const f_user = parseFloat(frequencyInput.value);
+
+    // Validate the entered frequency
+    if (isNaN(f_user) || f_user < parseFloat(frequencyInput.min)) {
+      // Display an alert or handle the invalid input in some way
+      alert('Frequency must be greater than or equal to ' + frequencyInput.min);
       
-    const f_user = parseFloat(document.getElementById("frequency").value);
+      // Reset the value to the minimum allowed
+      frequencyInput.value = frequencyInput.min;
+
+      return; // Exit the function early
+    }
+
+    // Check if the entered frequency exceeds the maximum allowed
+    if (f_user > parseFloat(frequencyInput.max)) {
+      // Set the value back to the maximum allowed
+      frequencyInput.value = frequencyInput.max;
+      
+      // Optionally, you can display an alert or handle the situation in some way
+      alert('Frequency must be between ' + frequencyInput.min + ' and ' + frequencyInput.max);
+      
+      return; // Exit the function early
+    }
+
     var eps_user = parseFloat(document.getElementById("epsilon").value);
     const anis_user = parseFloat(document.getElementById("anisotropy").value);
     const helioAng_user = parseFloat(document.getElementById("helioAngle").value);
@@ -127,6 +199,16 @@ function plotGraphs() {
     // match rounded user entry to data values
     if (eps_user === 0.7) {eps_user = 0.70922};
     if (eps_user === 1.4) {eps_user = 1.41};
+
+    const {
+      r_init,
+      r_shift,
+      fmhz,
+      eps,
+      anis,
+      s_fwhm,
+      t_1e_decay,
+    } = getArraysBasedOnCheckbox();
 
     // User value index search
     const fidx = fmhz.findIndex(num => num > f_user)
