@@ -1,14 +1,42 @@
 pro rays_swind, qeps2_scaling = qeps2_scaling, anis = anis, r_init = R_init, asym = asym, f_ratio = f_ratio
-  compile_opt idl2
   ; +
   ; Ray tracing and scattering based on the following paper:
   ; http://adsabs.harvard.edu/abs/2019arXiv190900340K
   ; the routine works in Sun centered cartesian coordinates
   ; z is along the line of sight
   ;
-  ; EXAMPLE: Calling sequence, e.g. for LOFAR observations:
-  ; IDL> rays_swind, qeps2_scaling=0.1, anis=0.1, r_init=1.75, asym=1., f_ratio=1.1
-  ;
+  ; EXAMPLE: Calling sequence, e.g. for LOFAR 30 MHz observations:
+  ; IDL> rays_swind, qeps2_scaling=0.1, anis=0.25, r_init=1.75, asym=1., f_ratio=2.0
+  ; 
+  ; PARAMETERS:
+  ; qeps2_scaling - scaling of qesp2 function (used 1./4,1/2, 1, 2, 4); default = 1 like in
+  ;                  ApJ Paper https://doi.org/10.3847/1538-4357/acf6c1
+  ; 
+  ; anis   - wavenumber anisotropy of density turbulence q_par/q_perp   ; default =0.25 
+  ;          anis->+infty, quasi-paraller density fluctuations
+  ;          anis=1 isotropic density fluctuations 
+
+  ; r_init - initial location of the source (to check local plasma frequency IDL> omega_pe(r_init)/2/!Pi/1e6 [MHz])
+  ; R_init=1.75D0 ;(around 32 MHz)
+  ; R_init=5.D0 ;(around 2 MHz)
+  ; R_init=2.21D0 ;(around 15 MHz)
+  ; R_init=1.1372D0 ;(around 329 MHz)
+  ; R_init=1.3D0 ;(around 100 MHz)
+  ; R_init=57.D0 ;(around 0.118 MHz)
+  ; R_init=10.D0 ;(around 0.765 MHz)
+  ; R_init=20.D0 ;(around 0.338 MHz)
+  ;   
+  ; f_ration - ratio of emitted frequency to local plasma frequency at the source
+  ;            i.e. omega/omega_pe(r_init)
+  ; 
+  ; asym  - asymetry parameter density fluctuations assymetry sunward/anisunward 
+  ; asym=1 - symmetric;
+  ; 0<asym<1 => more outward density fluctuation (inward radio stronger scattered)
+  ; 1<asym<2 => more inward density fluctuations (outward radio stronger scattered)
+  ; <delta n^2>_in= asym *<delta n^2>
+  ; <delta n^2>_out = (2- asym) *<delta n^2>
+  ; z_anis=asym*(k_along_r GT 0.) + (2.-asym)*(k_along_r LE 0.)
+  ; 
   ; HISTORY:
   ; Written: April 2018 by eduard@glasgow
   ; changed output file name to include assymetry and f_ratio July 11, 2019 by eduard@glasgow
@@ -21,7 +49,7 @@ pro rays_swind, qeps2_scaling = qeps2_scaling, anis = anis, r_init = R_init, asy
   ; updated: October 2023 by eduard@glasgow
   ; include qeps2 profile
 
-  N = 499l
+  N = 999l
   ; photon number
   R_S = 6.96e10
   c = 2.998e10
@@ -32,37 +60,13 @@ pro rays_swind, qeps2_scaling = qeps2_scaling, anis = anis, r_init = R_init, asy
   au = 215.
   ; astronomical unit
 
-  ; qesp2_scaling=.8
-  ; R_init=1.75D0 ;(around 32 MHz)
-  ; R_init=5.D0 ;(around 2 MHz)
-  ; R_init=2.21D0 ;(around 15 MHz)
-  ; R_init=1.11D0
-  ; R_init=1.1372D0 ;(around 329 MHz)
-  ; R_init=1.3D0 ;(around 100 MHz)
-  ; R_init=57.D0 ;(around 0.118 MHz)
-  ; R_init=10.D0 ;(around 0.765 MHz)
-  ; R_init=20.D0 ;(around 0.338 MHz)
-
   ; if input parameters undefined - we set default parameters
-  if (n_elements(qeps2_scaling) ne 1) then qeps2_scaling = 1.0
+  if (n_elements(qeps2_scaling) ne 1.0) then qeps2_scaling = 1.0
   if (n_elements(R_init) ne 1) then R_init = 20.0 ; r=20 fpe=0.338MHz
   if (n_elements(anis) ne 1) then anis = 0.25
-  if (n_elements(f_ratio) ne 1) then f_ratio = 1.1
-  if (n_elements(asym) ne 1) then asym = 1.
-  ; density fluctuations assymetry along r direction
-  ; asym=1 - symmetric;
-  ; 0<asym<1 => more outward density fluctuation (inward radio stronger scattered)
-  ; 1<asym<2 => more inward density fluctuations (outward radio stronger scattered)
-  ; <delta n^2>_in= asym *<delta n^2>
-  ; <delta n^2>_out = (2- asym) *<delta n^2>
-  ; z_anis=asym*(k_along_r GT 0.) + (2.-asym)*(k_along_r LE 0.)
-
-  ; anis=.25
-  ; Density fluctuation anisotropy parameter, anis=q_prarallel/q_perp_x
-  ; anis=1 is isotropic,
-  ; anis=0 2D density fluctuations
-  ; anis->+infty, quasi-paraller density fluctuations
-
+  if (n_elements(f_ratio) ne 1) then f_ratio = 2.0
+  if (n_elements(asym) ne 1) then asym = 1. 
+ 
   theta_0 = 0.d0
   r = findgen(N) * 0.d0 + R_init
   rtheta = (theta_0 + findgen(N) / N * 0.) * !pi / 180.d0
@@ -710,140 +714,31 @@ pro rays_swind, qeps2_scaling = qeps2_scaling, anis = anis, r_init = R_init, asy
   ; stop
 end
 
-function nu_scat, r, omega, 
+function nu_scat, r, omega, qeps2_scaling
   compile_opt idl2
   c = 2.998e10
-
-  ; h_i =684.*1e5/sqrt(density_r(r))
-  ; inner tubulence scale in cm
-  ; q_av=4./(sqrt(!PI)*h_i)
-  ; average q assuming Gaussian spectrum
-  ; w_pe=omega_pe(r)
-  ; nu_s=2.*!PI/8.*^2*q_av*w_pe^4*c/omega/(omega^2-w_pe^2)^1.5
-
-  ; ff_pe=w_pe/(2.*!PI)/1e6
-  ; nu_s=nu_s*(10./ff_pe)^2/(1+10./ff_pe)^2
+  ; function to run a specific function for nu_scat 
   ; return,nu_s
   ; units of rad^2/s
 
-  nu_s = nu_scat_fixed(r, omega, )
+  nu_s = nu_scat_fixed(r, omega, qeps2_scaling)
   ; changes here to avoid other changes in the code
   return, nu_s
 end
 
-function nu_scat_fixed, r, omega, 
+function nu_scat_fixed, r, omega, qesp2_scaling
   compile_opt idl2
-  ; scattering power as per Krupar paper
-  ; http://adsabs.harvard.edu/abs/2018ApJ...857...82K
-  ; following
-  ; http://adsabs.harvard.edu/abs/2008ApJ...676.1338T
+  ; scattering as per ApJ 2003 paper
+  ; https://doi.org/10.3847/1538-4357/acf6c1
   c = 2.998d10
   ; l_i =684.*1e5/sqrt(density_r(r))
-  l_i = 1d5 * r
-  ; from (Manoharan et al. 1987; Coles & Harmon 1989).
-  ; inner tubulence scale in cm
-  ; l_0=1e6*l_i
-  l_0 = 0.23d0 * 6.9e10 * (r) ^ 0.82
-  ; from  Wohlmuth et al.(2001)
-  ; outer turbulence scale
   w_pe = omega_pe(r)
-  ; qeps2=8.*qesp2_scaling*qesp2_scaling/(l_i^(1./3.)*l_0^(2./3.))
-  ; eps2_L=16./(l_i^(1./3.)*l_0^(2./3.))*((r-0.5)/r)^3
-  ; ratio_B=((1.18/r^2)/bfield_r(r))^2.
-  ; eps2_L=3600./6.96d10/r^0.9 *((1.18/r^2)/(1.18/r^2+10/r^6))^2
-  ; eps2_L=1./6.96d10/r^0.9 * 4e3*(1/(1+200/r^10))
-  ; eps2_L=4d3/6.96d10/r^0.9*((r-1)/r)^3.5
-  ; eps2_L=3e2*3e3*(r-1)^3/(3e3*(r-1)^3+3e2)/6.96d10
-  eps2_L = 2e3 / r ^ 0.7 * ((r - 1.) / r) ^ 2.7
-  eps2_L = eps2_L * qesp2_scaling ^ 2 / 6.96d10
-  nu_s = !pi / 8 * eps2_L * w_pe ^ 4 * c / omega / (omega ^ 2 - w_pe ^ 2) ^ 1.5
-  ; this is the fixed eps2/L value  by (good_rinit-1)^0.9*2/good_rinit^(0.82*2./3.+0.333)
-  ; from the results of MC simulations
+  q_eps2 = qesp2_scaling* 2e3 / r ^ 0.7 * ((r - 1.) / r) ^ 2.7 / 6.96d10
+  nu_s = !pi / 8 * q_eps2 * w_pe ^ 4 * c / omega / (omega ^ 2 - w_pe ^ 2) ^ 1.5
   return, nu_s
   ; units of rad^2/s
 end
 
-function nu_scat_krupar, r, omega, qesp2_scaling
-  compile_opt idl2
-  ; scattering power as per Krupar paper
-  ; http://adsabs.harvard.edu/abs/2018ApJ...857...82K
-  ; following
-  ; http://adsabs.harvard.edu/abs/2008ApJ...676.1338T
-  c = 2.998d10
-  ; l_i =684.*1e5/sqrt(density_r(r))
-  l_i = 1d5 * r
-  ; from (Manoharan et al. 1987; Coles & Harmon 1989).
-  ; inner tubulence scale in cm
-  ; l_0=1e6*l_i
-  l_0 = 0.23d0 * 6.9e10 * (r) ^ 0.82
-  ; from  Wohlmuth et al.(2001)
-  ; outer turbulence scale
-  ;
-  w_pe = omega_pe(r)
-  qeps2 = 8. * qesp2_scaling * qesp2_scaling / (l_i ^ (1. / 3.) * l_0 ^ (2. / 3.))
-  nu_s = !pi * qesp2_scaling ^ 2 / (l_i ^ (1. / 3.) * l_0 ^ (2. / 3.)) * w_pe ^ 4 * c / omega / (omega ^ 2 - w_pe ^ 2) ^ 1.5
-  stop
-  return, nu_s
-  ; units of rad^2/s
-end
-
-function nu_scat_krupar2, r, omega, qesp2_scaling
-  compile_opt idl2
-  ; scattering power as per Krupar paper
-  ; http://adsabs.harvard.edu/abs/2018ApJ...857...82K
-  ; following
-  ; http://adsabs.harvard.edu/abs/2008ApJ...676.1338T
-  c = 2.998e10
-  l_i = 684. * 1e5 / sqrt(density_r(r))
-  ; l_i=1e5*(r-1.)
-  ; from (Manoharan et al. 1987; Coles & Harmon 1989).
-  ; inner tubulence scale in cm
-  ; l_0=1e6*l_i
-  l_0 = 0.23 * 6.9e10 * (r - 1.) ^ 1.0
-  ; from  Wohlmuth et al.(2001)
-  ; outer turbulence scale
-  ;
-  w_pe = omega_pe(r)
-  nu_s = !pi * qesp2_scaling ^ 2 / (l_i ^ (1. / 3.) * l_0 ^ (2. / 3.)) * w_pe ^ 4 * c / omega / (omega ^ 2 - w_pe ^ 2) ^ 1.5
-
-  return, nu_s
-  ; units of rad^2/s
-end
-
-function nu_scat_chen, r, omega, qesp2_scaling
-  compile_opt idl2
-  ; scattering power as per Chen paper
-  ; qesp2_scaling=1.3e-3
-  c = 2.998e10
-  h_i = 684. * 1e5 / sqrt(density_r(r))
-  ; inner tubulence scale in cm
-  q_av = 4. / (sqrt(!pi) * h_i)
-  ; average q assuming Gaussian spectrum
-  w_pe = omega_pe(r)
-  nu_s = 2. * !pi / 8. * qesp2_scaling ^ 2 * q_av * w_pe ^ 4 * c / omega / (omega ^ 2 - w_pe ^ 2) ^ 1.5
-  return, nu_s
-
-  ; units of rad^2/s
-end
-
-function nu_scat_spangler, r, omega, qesp2_scaling
-  compile_opt idl2
-  ; scattering power as per Chen paper
-  ; qesp2_scaling=1.3e-3
-  c = 2.998e10
-  h_i = 684. * 1e5 / sqrt(density_r(r))
-  ; inner tubulence scale in cm
-  q_av = 4. / (sqrt(!pi) * h_i)
-  ; average q assuming Gaussian spectrum
-  w_pe = omega_pe(r)
-  m2cm = 2.15d13
-  dn2_n2 = (1.8d10 / m2cm) * (10. / r) ^ 3.7 / (density_r(r) ^ 2)
-  q_av = 12. * !pi * (2. * !pi / h_i) ^ 0.3333
-  nu_s = 2. * !pi / 8. * dn2_n2 * q_av * w_pe ^ 4 * c / omega / (omega ^ 2 - w_pe ^ 2) ^ 1.5
-  return, nu_s
-
-  ; units of rad^2/s
-end
 
 function omega_pe, r
   compile_opt idl2
