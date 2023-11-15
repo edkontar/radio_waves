@@ -704,7 +704,7 @@ pro rays_swind, qeps2_scaling = qeps2_scaling, anis = anis, r_init = R_init, asy
     t_peak: t_max, t_hm_before: t_HM_before, t_hm_after: t_HM_after, t_1E_after: t_1e_after, terr: dtbin}
 
   fname = 'fpe' + string(format = '(I7.7)', omega_pe0 / 1e3 / 2 / !pi) + 'kHz_FE' + string(format = '(I7.7)', omega0 / 1e3 / 2 / !pi) $
-    + 'anis' + string(format = '(F4.2)', anis) + 'qeps2_scaling' + string(format = '(F5.3)', qeps2_scaling) $
+    + 'anis' + string(format = '(F4.2)', anis) + 'qeps2_s' + string(format = '(F5.3)', qeps2_scaling) $
     + 'asym' + string(format = '(F4.2)', asym) + 'fr' + string(format = '(F4.2)', f_ratio) + '.sav'
 
   save, out, filename = fname
