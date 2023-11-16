@@ -728,8 +728,9 @@ end
 
 function nu_scat_fixed, r, omega, qesp2_scaling
   compile_opt idl2
-  ; scattering as per ApJ 2003 paper
+  ; scattering qeps2 expression as Equation 14 in ApJ 2003 paper
   ; https://doi.org/10.3847/1538-4357/acf6c1
+  ; qesp2_scaling was used 1/4,1/2,1,2,4
   c = 2.998d10
   ; l_i =684.*1e5/sqrt(density_r(r))
   w_pe = omega_pe(r)
