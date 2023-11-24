@@ -49,7 +49,7 @@ pro rays_swind, qeps2_scaling = qeps2_scaling, anis = anis, r_init = R_init, asy
   ; updated: October 2023 by eduard@glasgow
   ; include qeps2 profile
 
-  N = 999l
+  N = 9999l
   ; photon number
   R_S = 6.96e10
   c = 2.998e10
@@ -67,7 +67,7 @@ pro rays_swind, qeps2_scaling = qeps2_scaling, anis = anis, r_init = R_init, asy
   if (n_elements(f_ratio) ne 1) then f_ratio = 2.0
   if (n_elements(asym) ne 1) then asym = 1. 
  
-  theta_0 = 0.d0
+  theta_0 = 30.d0
   r = findgen(N) * 0.d0 + R_init
   rtheta = (theta_0 + findgen(N) / N * 0.) * !pi / 180.d0
   rfi = (0. + findgen(N) / N * 0.) * !pi / 180.d0
