@@ -1,6 +1,4 @@
 To run:
-
-**Example:**  
 ```
 from rays_swind import Scattering
  
