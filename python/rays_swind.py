@@ -844,7 +844,7 @@ class Scattering:
         cols.append(fits.Column(name = 't_1e_after', format = 'E', array = [t_1e_after]))
         cols.append(fits.Column(name = 'terr', format = 'E', array = [dtbin]))
 
-        fname = 'fpe' + (str(int(omega_pe0/1e3/2/np.pi))).zfill(7) + 'kHz_FE' + (str(int(omega0/1e3/2/np.pi))).zfill(7) + 'anis' + str(format(anis, '.2f')) + 'qeps2_scaling' + str(format(qeps2_scaling, '.3f')) + 'asym' + str(format(asym, '.2f')) + 'fr' + str(format(f_ratio, '.2f'))
+        fname = 'fpe' + (str(int(omega_pe0/1e3/2/np.pi))).zfill(7) + 'kHz_FE' + (str(int(omega0/1e3/2/np.pi))).zfill(7) + 'anis' + str(format(anis, '.2f')) + 'qeps2_s' + str(format(qeps2_scaling, '.3f')) + 'asym' + str(format(asym, '.2f')) + 'fr' + str(format(f_ratio, '.2f'))
         hdulist = fits.HDUList()
         hdulist.append(fits.PrimaryHDU(header = p_hdr))
         hdulist.append(fits.BinTableHDU.from_columns(cols, header=t_hdr, name='DATA'))
