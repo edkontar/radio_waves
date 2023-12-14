@@ -165,7 +165,7 @@ class Scattering:
         rfi = (0 + np.linspace(0, N, num = N, dtype = float)/N*0) * np.pi/180
         # r = r + (np.random.uniform(0, 1, size = N)) * 1e-1
 
-        Te = 86.0 # temperature, eV
+        Te = 86.0 * 1.5 # temperature, eV
         nu_e = 2.91e-6 * self.density_r(r_init) * 20/(Te**1.5)
         rz = r * np.cos(rtheta)
         rx = r * np.sin(rtheta) * np.cos(rfi)
