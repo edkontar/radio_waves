@@ -320,7 +320,7 @@ class Scattering:
         # r_stop = 3
         # while (t <= tmax) and (len(r) >= 10):
 
-        while len(r) >= N/200:
+        while len(r) >= 2:
 
             r = np.sqrt(rx**2 + ry**2 + rz**2)
             kc = np.sqrt(kx**2 + ky**2 + kz**2)
@@ -334,7 +334,7 @@ class Scattering:
             dt_ref = min(abs(kc/(self.domega_dr(r) * c_r)/20))
             dt_dr = min(r/(c_r/omega0*kc))/20
             # mean scattering time in seconds
-            dt = min([0.1/max(nu_s), dt0, dt_ref, dt_dr])
+            dt = min([0.3/max(nu_s), dt0, dt_ref, dt_dr])
             
             # distance measured in solar radii. These values differ due to random function
             # used to generate kc, kx etc
