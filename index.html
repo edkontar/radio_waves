@@ -52,6 +52,24 @@
         <label for="checkbox2">Harmonic</label><br><br>
     
       </form>
+
+    <div id="abstractDiv">
+      <p>
+        Solar radio bursts are strongly affected by radio-wave scattering on density inhomogeneities, changing their observed time characteristics, size, and positions.
+        Using the large-scale simulations of radio-wave transport published in
+        <a href="https://ui.adsabs.harvard.edu/abs/2023ApJ...956..112K/abstract" target="_blank">Kontar et al. (2023)</a>,
+        this interactive tool visualises the effects of anisotropic scattering on radio images with a size and shape dictated by the turbulence model
+        $\overline{q\epsilon^2}(r)$. This quantity is the spectrum-weighted mean wavenumber of the density fluctuations (proportional to the scattering rate of radio waves),
+        which when normalised by the solar radius and plasma density, is described by $\overline{q\epsilon^2}R_\odot n^2=6.5\times10^{14}\left(r/R_\odot – 1\right)^{-5.17}$
+        from 0.1 to 1 au. The model is inferred from solar, non-solar, and in-situ density fluctuation measurements where the largest contribution comes from the density
+        fluctuations near the inner-scale.  The model has a broad maximum near (4 - 7) R$_\odot$ and can be multiplied by a scaling factor between 0.25 - 4,
+        with the level of anisotropy varied between 0.19 - 0.42 (where 1.0 is isotropic). This range of anisotropy and spread in
+        $\overline{q\epsilon^2}$ scaling from 0.5 - 2 is found to account for the majority of solar radio observations.
+      </p>
+      <p class="footer">
+        Site created by Daniel Clarkson @ University of Glasgow.
+      </p>
+    </div>
     
     <div id="imageDiv"></div>
     <div id="sizeFreqDiv"></div>
@@ -61,10 +79,6 @@
     <script type="text/javascript" src="js/script.js"></script>
 
   </div>
-
-  <footer>
-    Data published in Kontar et al. (2023) <a href="https://ui.adsabs.harvard.edu/abs/2023arXiv230805839K/abstract" target="_blank">doi:10.48550/arXiv.2308.05839</a>
-  </footer>
 
 </body>
 
