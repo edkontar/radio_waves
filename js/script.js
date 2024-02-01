@@ -1,3 +1,15 @@
+function validateFrequencyInput(input) {
+  // Parse the input value as a floating-point number
+  const enteredValue = parseFloat(input.value);
+
+  // Check if the entered value is less than the minimum allowed
+  if (enteredValue < parseFloat(input.min)) {
+    input.setCustomValidity('Value must be greater than or equal to ' + input.min);
+  } else {
+    input.setCustomValidity('');
+  }
+}
+
 // JavaScript function to toggle checkboxes
 function toggleCheckbox(checkbox) {
   var checkboxes = document.getElementsByName(checkbox.name);
@@ -245,7 +257,7 @@ function plotGraphs() {
       const decay = freqsObj.indices.map(index => t_1e_decay[index]);
       const rr = freqsObj.indices.map(index => r_init[index]);
       const rshift = freqsObj.indices.map(index => r_shift[index]);
-
+      
       // Interpolate at user frequency
       var sint = interpolate(freqs,sizes,f_user); // arcsec
       var sint_fwhm = sint/3600*2.355; // for size,freq plot which is always in deg
@@ -322,7 +334,9 @@ function plotGraphs() {
         }
       }
       //const maxAmplitude = Math.max(...z.flat()); // Find the maximum value in the data
-      const fwhmThreshold = maxAmplitude * 0.5;  // Half of the maximum value
+      const fwhmThreshold50 = maxAmplitude * 0.50;
+      const fwhmThreshold70 = maxAmplitude * 0.70;
+      const fwhmThreshold90 = maxAmplitude * 0.90;
 
       // Create a range of contour levels from 0 to 1
       const contourLevels = Array.from({ length: 11 }, (_, i) => i / 10); // 11 levels from 0 to 1
@@ -333,11 +347,11 @@ function plotGraphs() {
         x: x,
         y: y,
         z: im,
-        colorscale: 'YlOrRd',
+        colorscale: 'YlGnBu',
         colorbar: {
           title: 'Normalised Intensity',
           titleside: 'right',
-          len: 1.06
+          len: 1.06,
         },
         hoverinfo: 'skip',
         zmin: 0, // Set the minimum value for the color scale
@@ -345,33 +359,85 @@ function plotGraphs() {
       };
 
       // Create a contour trace at the 50% level
-      const fwhmTrace = {
-        type: 'contour',
-        x: x,
-        y: y,
-        z: im,
-        showlegend: false,
-        hoverinfo: 'skip',
-        name: 'FWHM',
-        contours: {
-          start: fwhmThreshold.toFixed(1),
-          end: fwhmThreshold.toFixed(1),
-          size: 0, // Set to 0 to only plot the 50% contour line
-          coloring: 'none',
-          showlabels: true,
-          labelfont: {
-            color: 'black'
-          },
-          showlines: true,
-          line: {
-            dash: 'dash', // Make the contour line dashed
-            width: 4, // Adjust the line width as needed
-            color: 'black', // Set the line color to black
+      const fwhmTraces = [
+        {
+          type: 'contour',
+          x: x,
+          y: y,
+          z: im,
+          showlegend: false,
+          hoverinfo: 'skip',
+          name: 'FWHM',
+          contours: {
+            start: fwhmThreshold50.toFixed(1),
+            end: fwhmThreshold50.toFixed(1),
+            size: 0, // Set to 0 to only plot the 50% contour line
+            coloring: 'none',
+            showlabels: true,
+            labelfont: {
+              color: 'black'
+            },
+            showlines: true,
+            line: {
+              dash: 'dash', // Make the contour line dashed
+              width: 4, // Adjust the line width as needed
+              color: 'black', // Set the line color to black
+            },
           },
         },
-      };
+        {
+          type: 'contour',
+          x: x,
+          y: y,
+          z: im,
+          showlegend: false,
+          hoverinfo: 'skip',
+          name: 'FWHM',
+          contours: {
+            start: fwhmThreshold70.toFixed(1),
+            end: fwhmThreshold70.toFixed(1),
+            size: 0, // Set to 0 to only plot the 50% contour line
+            coloring: 'none',
+            showlabels: true,
+            labelfont: {
+              color: 'black'
+            },
+            showlines: true,
+            line: {
+              dash: 'dash', // Make the contour line dashed
+              width: 4, // Adjust the line width as needed
+              color: 'black', // Set the line color to black
+            },
+          },
+        },
+        {
+          type: 'contour',
+          x: x,
+          y: y,
+          z: im,
+          showlegend: false,
+          hoverinfo: 'skip',
+          name: 'FWHM',
+          contours: {
+            start: fwhmThreshold90.toFixed(1),
+            end: fwhmThreshold90.toFixed(1),
+            size: 0, // Set to 0 to only plot the 50% contour line
+            coloring: 'none',
+            showlabels: true,
+            labelfont: {
+              color: 'black'
+            },
+            showlines: true,
+            line: {
+              dash: 'dash', // Make the contour line dashed
+              width: 4, // Adjust the line width as needed
+              color: 'black', // Set the line color to black
+            },
+          },
+        },
+      ];
 
-      var data = [contourTrace, fwhmTrace];
+      var data = [contourTrace, ...fwhmTraces];
 
       // Plot Sun
       const numPoints = 1000; // Generate an array of angles from 0 to 2pi
@@ -442,14 +508,14 @@ function plotGraphs() {
 
       // Sun for pos plot
       const sunPosTrace = {
-        x: [0],
-        y: [0],
+        x: circle_angles.map(angle => Math.cos(angle)),
+        y: circle_angles.map(angle => Math.sin(angle)),
         type: 'scatter',
         mode: 'markers',
         marker: {
           symbol: 'circle',
           color: '#FFD700',
-          size: 7
+          size: 3
         },
         showlegend: false,
         hoverinfo: 'skip'
@@ -458,7 +524,7 @@ function plotGraphs() {
       data3 = [sunPosTrace, posTrace];
 
       // Trace for radii circles in position plot
-      const radii = [10, 20, 30, 40, 50,60];
+      const radii = [10, 20, 30, 40, 50, 60, 70, 80];
       const labelAngle = -45; // Desired angle for the labels (in degrees)
       const circleTraces = radii.map(radius => ({
         x: circle_angles.map(angle => radius * Math.cos(angle)),
@@ -491,9 +557,24 @@ function plotGraphs() {
           bgcolor: 'rgba(255, 255, 255, 0.5)', // Transparent white background for the label
         };
       });
+
+      // Trace for last scattering radius in position plot
+      const lastScatTrace = {
+        x: circle_angles.map(angle => shiftint * Math.cos(angle)),
+        y: circle_angles.map(angle => shiftint * Math.sin(angle)),
+        mode: 'lines',
+        line: {
+          dash: 'solid',
+          color: 'red',
+          width: 1,
+        },
+        hoverinfo: 'skip',
+        name: ' ', // Legend label for the circle
+      };
+      console.log(shiftint)
       
       // Combine all the circle traces into a single data array
-      const data3b = [...circleTraces];
+      const data3b = [...circleTraces, lastScatTrace];
 
       // Create size against freq plot
       const decayTrace = {
@@ -573,15 +654,16 @@ function plotGraphs() {
           text: 'Frequency: '+f_user.toFixed(1)+' MHz',
           showarrow: false,
         },
-        {
-          x: -0.1,
-          y: 1.2,
-          xref: 'paper',
-          yref: 'paper',
-          text: 'FWHM Major Size: '+(sint*2.355).toFixed(1)+' '+slabel,
-          showarrow: false,
-        },
+        //{
+        // x: -0.1,
+        //  y: 1.2,
+        //  xref: 'paper',
+        //  yref: 'paper',
+        //  text: 'FWHM Major Size: '+(sint*2.355).toFixed(1)+' '+slabel,
+        //  showarrow: false,
+        //},
         ],
+        dragmode: 'pan', // disables zooming
       };
 
       // Set sizeFreq plot style
@@ -607,7 +689,35 @@ function plotGraphs() {
           autorange: true,
           showline: true, 
         },
+        // Add annotation for FWHM Major Size value
+        annotations: [
+          {
+            x: 1,
+            y: 1,
+            xref: 'paper',
+            yref: 'paper',
+            text: 'FWHM Major Size: ' + (sint * 2.355).toFixed(1) + ' ' + slabel,
+            showarrow: false,
+          },
+        ],
       };
+      
+      // last scattering radius annotation
+      const additionalAnnotations = [
+        {
+          x: 0,
+          y: 1,
+          xref: 'paper',
+          yref: 'paper',
+          text: 'Radius of Last Scattering',
+          showarrow: false,
+          font: {
+            color: 'red', // Set the color property to 'red'
+          },
+        },
+      ];
+      // combine annotations for position plot
+      const allAnnotations = [...circleLabelAnnotations, ...additionalAnnotations];
 
       // Set position plot style
       var layout3 = {
@@ -615,22 +725,24 @@ function plotGraphs() {
         height: 500, // set height
         aspectratio: { x: 1, y: 1 }, // Set equal aspect ratio for x and y
         showlegend: false,
-        annotations: circleLabelAnnotations,
+        annotations: allAnnotations,
         pad: 0,
         xaxis: {
           title: 'X [Rsun]',
           ticks: 'inside',
-          tickvals: [-60, -40, -20, 0, 20, 40, 60],
+          //tickvals: [-80, -60, -40, -20, 0, 20, 40, 60, 80],
+          dtick: Math.round((shiftint * 1.2 * 2) / 5),
           linewidth: 2,
-          range: [-70, 70],
+          range: [-shiftint*1.2, shiftint*1.2],
           showline: true,
         },
         yaxis: {
           title: 'Z [Rsun]',
           ticks: 'inside',
-          tickvals: [-60, -40, -20, 0, 20, 40, 60],
+          //tickvals: [-80 -60, -40, -20, 0, 20, 40, 60, 80],
+          dtick: Math.round((shiftint * 1.2 * 2) / 5),
           linewidth: 2,
-          range: [70, -70],
+          range: [shiftint*1.2, -shiftint*1.2],
           showline: true, 
         },
       };
@@ -658,6 +770,17 @@ function plotGraphs() {
           autorange: true,
           showline: true, 
         },
+        // Add annotation for decay value
+        annotations: [
+          {
+            x: 1,
+            y: 1,
+            xref: 'paper',
+            yref: 'paper',
+            text: '1/e Decay: ' + (dint).toFixed(2) + ' s',
+            showarrow: false,
+          },
+        ],
       };
 
       const config = {
@@ -697,5 +820,11 @@ window.addEventListener('load', plotGraphs);
 const formInputs = document.querySelectorAll('form input, form select');
 formInputs.forEach((input) => {
   input.addEventListener('input', plotGraphs);
-
+  // Add an event listener for the "keydown" event to prevent form submission on Enter key press
+  input.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      plotGraphs();
+    }
+  });
 });
