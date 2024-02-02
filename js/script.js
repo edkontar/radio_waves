@@ -502,6 +502,7 @@ function plotGraphs() {
           color: 'white',
           width: 0.025
         },
+        hoverinfo: 'skip',
       };
 
       // Create a 2D grid-like pattern by connecting points in the correct order
