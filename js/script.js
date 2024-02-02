@@ -692,7 +692,6 @@ function plotGraphs() {
         hoverinfo: 'skip',
         name: ' ', // Legend label for the circle
       };
-      console.log(shiftint)
       
       // Combine all the circle traces into a single data array
       const data3b = [...circleTraces, lastScatTrace];
