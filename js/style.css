@@ -91,25 +91,25 @@ footer {
 @media screen and (max-width: 768px) {
     #imageDiv {
         left: 10px;
-        top: 250px;
+        top: 800px;
         width: 50%;
         z-index: 2;
     }
     
     #posDiv {
         left: 15px;
-        top: 650px;
+        top: 1200px;
         z-index: 1;
     }
 
     #sizeFreqDiv {
         left: 10px;
-        top: 1050px;
+        top: 1600px;
     }
 
     #decayDiv {
         left: 10px;
-        top: 1450px;
+        top: 2000px;
         padding-bottom: 50px;
     }
 
