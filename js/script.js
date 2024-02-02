@@ -162,6 +162,43 @@ function updateAngSliderValue(sliderId, displayId) {
   display.textContent = slider.value + " deg";
 }
 
+// Function to tile 1D array to 2D array
+function tileVertically(originalArray, numRows, numCols) {
+  if (originalArray.length !== numRows) {
+    throw new Error("Invalid dimensions for tiling.");
+  }
+
+  const resultArray = [];
+
+  for (let i = 0; i < numRows; i++) {
+    const row = Array.from({ length: numCols }, () => originalArray[i]);
+    resultArray.push(row);
+  }
+
+  return resultArray;
+}
+
+function degToRad(deg) {
+  return deg * (Math.PI / 180);
+}
+
+// for creating helio grid lat,lon to arcsec from solar center
+function convertToXYZ(lat, lon, radius, xRotationDegrees) {
+  const latRad = degToRad(lat);
+  const lonRad = degToRad(lon);
+  const xRotationRad = degToRad(xRotationDegrees);
+
+  const y = radius * Math.sin(latRad);
+  const x = radius * Math.cos(latRad) * Math.sin(lonRad);
+  const z = -radius * Math.cos(latRad) * Math.cos(lonRad);
+
+  // Rotation matrix around x-axis
+  const rotatedY = y * Math.cos(xRotationRad) - z * Math.sin(xRotationRad);
+  const rotatedZ = y * Math.sin(xRotationRad) + z * Math.cos(xRotationRad);
+
+  return { x, y: rotatedY, z: rotatedZ };
+}
+
 // Run the updateSliderValue function when the page loads
 window.addEventListener('load', function () {
   //updateFreqSliderValue("frequency", "frequencyValue");
@@ -285,6 +322,23 @@ function plotGraphs() {
       // Generate plot data
       const gaussian = makeGaussian(1, 0, 0, sint, sint);
 
+      // create helio grid
+      const grid_spacing = 10;
+      const gv = range(0, 36, 37).map(value => value * grid_spacing - 90).flat();
+      const np = gv.length;
+      const lon = tileVertically(gv, np, np);
+      const lat = lon[0].map((val, index) => lon.map(row => row[index]).reverse()); // rotate lon by 90 deg      
+      const latLonCoordinates = [];
+  
+      for (let i = 0; i < np; i++) {
+        for (let j = 0; j < np; j++) {
+          const latVal = lat[i][j];
+          const lonVal = lon[i][j];
+          const { x, y, z } = convertToXYZ(latVal, lonVal, rsun, 0);
+          latLonCoordinates.push({ lat: latVal, lon: lonVal, x, y, z });
+        }
+      }
+      
       // create x,y arrays for image
       const numXYPoints = 300;
       var x = range(-xRange, xRange, numXYPoints);
@@ -437,7 +491,68 @@ function plotGraphs() {
         },
       ];
 
-      var data = [contourTrace, ...fwhmTraces];
+      const solarGridTrace = {
+        type: 'scatter',
+        mode: 'lines',
+        x: [],
+        y: [],
+        line: {
+          //dash: 'dot',
+          opacity: 0.1,
+          color: 'white',
+          width: 0.025
+        },
+      };
+
+      // Create a 2D grid-like pattern by connecting points in the correct order
+      for (let i = 0; i < np; i++) {
+        const xSubset = latLonCoordinates.slice(i * np, (i + 1) * np).map(coord => coord.x);
+        const ySubset = latLonCoordinates.slice(i * np, (i + 1) * np).map(coord => coord.y);
+
+        // Set the style for the additional lines
+        const additionalLines = {
+          type: 'scatter',
+          mode: 'lines',
+          x: xSubset.concat(xSubset[0]),
+          y: ySubset.concat(ySubset[0]),
+          line: {
+            //dash: 'dot',
+            opacity: 0.1,
+            color: 'white',
+            width: 0.025
+          }
+        };
+
+        // Concatenate the additional lines to the trace
+        solarGridTrace.x = solarGridTrace.x.concat(additionalLines.x); 
+        solarGridTrace.y = solarGridTrace.y.concat(additionalLines.y);
+      }
+
+      // Create additional lines along the other axis
+      for (let j = 0; j < np; j++) {
+        const xSubset = latLonCoordinates.filter((_, index) => index % np === j).map(coord => coord.x);
+        const ySubset = latLonCoordinates.filter((_, index) => index % np === j).map(coord => coord.y);
+
+        // Set the style for the additional lines
+        const additionalLines = {
+          type: 'scatter',
+          mode: 'lines',
+          x: xSubset.concat(xSubset[0]),
+          y: ySubset.concat(ySubset[0]),
+          line: {
+            //dash: 'dot',
+            opacity: 0.1,
+            color: 'white',
+            width: 0.025
+          }
+        };
+
+        // Concatenate the additional lines to the trace
+        solarGridTrace.x = solarGridTrace.x.concat(additionalLines.x);
+        solarGridTrace.y = solarGridTrace.y.concat(additionalLines.y);
+      }
+      
+      var data = [contourTrace, ...fwhmTraces, solarGridTrace];
 
       // Plot Sun
       const numPoints = 1000; // Generate an array of angles from 0 to 2pi
