@@ -810,6 +810,7 @@ function plotGraphs() {
           autorange: true,
           showline: true, 
         },
+        staticPlot: true,
         // Add annotation for FWHM Major Size value
         annotations: [
           {
@@ -866,6 +867,7 @@ function plotGraphs() {
           range: [shiftint*1.2, -shiftint*1.2],
           showline: true, 
         },
+        staticPlot: true,
       };
 
       // Set decay plot style
@@ -891,6 +893,7 @@ function plotGraphs() {
           autorange: true,
           showline: true, 
         },
+        staticPlot: true,
         // Add annotation for decay value
         annotations: [
           {
