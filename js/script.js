@@ -500,9 +500,10 @@ function plotGraphs() {
           //dash: 'dot',
           opacity: 0.1,
           color: 'white',
-          width: 0.025
+          width: 0.025,
         },
-        hoverinfo: 'skip',
+          hoverinfo: 'skip',
+          name: ' ',
       };
 
       // Create a 2D grid-like pattern by connecting points in the correct order
@@ -520,8 +521,10 @@ function plotGraphs() {
             //dash: 'dot',
             opacity: 0.1,
             color: 'white',
-            width: 0.025
-          }
+            width: 0.025,
+          },
+          hoverinfo: 'skip',
+          name: ' ',
         };
 
         // Concatenate the additional lines to the trace
@@ -544,8 +547,10 @@ function plotGraphs() {
             //dash: 'dot',
             opacity: 0.1,
             color: 'white',
-            width: 0.025
-          }
+            width: 0.025,
+          },
+          hoverinfo: 'skip',
+          name: ' ',
         };
 
         // Concatenate the additional lines to the trace
