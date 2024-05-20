@@ -255,7 +255,7 @@ function plotGraphs() {
     const helioAngRad_user = (helioAng_user * Math.PI)/180;
   
     // match rounded user entry to data values
-    if (eps_user === 0.7) {eps_user = 0.70922};
+    if (eps_user === 0.7) {eps_user = 0.709};
     if (eps_user === 1.4) {eps_user = 1.41};
 
     async function run() {
