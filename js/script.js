@@ -830,7 +830,7 @@ function plotGraphs() {
           y: 1,
           xref: 'paper',
           yref: 'paper',
-          text: 'Radius of Last Scattering',
+          text: 'Strong Scattering Region',
           showarrow: false,
           font: {
             color: 'red', // Set the color property to 'red'
