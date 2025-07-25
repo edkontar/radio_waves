@@ -338,7 +338,7 @@ function plotGraphs() {
           latLonCoordinates.push({ lat: latVal, lon: lonVal, x, y, z });
         }
       }
-      
+
       // create x,y arrays for image
       const numXYPoints = 300;
       var x = range(-xRange, xRange, numXYPoints);
@@ -502,8 +502,8 @@ function plotGraphs() {
           color: 'white',
           width: 0.025,
         },
-          hoverinfo: 'skip',
-          name: ' ',
+        hoverinfo: 'skip',
+        name: ' ',
       };
 
       // Create a 2D grid-like pattern by connecting points in the correct order
@@ -550,14 +550,14 @@ function plotGraphs() {
             width: 0.025,
           },
           hoverinfo: 'skip',
-          name: ' ',
+          name: ' '
         };
 
         // Concatenate the additional lines to the trace
         solarGridTrace.x = solarGridTrace.x.concat(additionalLines.x);
         solarGridTrace.y = solarGridTrace.y.concat(additionalLines.y);
       }
-      
+
       var data = [contourTrace, ...fwhmTraces, solarGridTrace];
 
       // Plot Sun
@@ -617,14 +617,14 @@ function plotGraphs() {
         x: [xpos],
         y: [zpos],
         type: 'scatter',
-        mode: 'text',
-        text: ['x'],
-        textposition: 'center',
-        textfont: {
-          size: 20,
+        mode: 'markers',
+        marker: {
+          symbol: 'x',
+          size: 8,  // smaller size makes lines thinner visually
           color: 'red',
         },
-        showlegend: false
+        showlegend: false,
+        name: 'Source'
       };
 
       // Sun for pos plot
@@ -632,13 +632,14 @@ function plotGraphs() {
         x: circle_angles.map(angle => Math.cos(angle)),
         y: circle_angles.map(angle => Math.sin(angle)),
         type: 'scatter',
-        mode: 'markers',
+        mode: 'lines+markers',
         marker: {
           symbol: 'circle',
           color: '#FFD700',
           size: 3
         },
-        showlegend: false,
+        showlegend: true,
+        name: 'Sun',
         hoverinfo: 'skip'
       };
 
@@ -657,6 +658,7 @@ function plotGraphs() {
             width: 1,
         },
         hoverinfo: 'skip',
+        showlegend: false,
         name: ' ', // Legend label for the circle
       }));
       
@@ -690,6 +692,7 @@ function plotGraphs() {
           width: 1,
         },
         hoverinfo: 'skip',
+        showlegend: false,
         name: ' ', // Legend label for the circle
       };
       
@@ -727,6 +730,57 @@ function plotGraphs() {
 
       data4 = [decayTrace, intDecayXOverlayTrace, intDecayYOverlayTrace];
 
+      // Create distance against freq plot
+      const distTrace = {
+        x: freqs,
+        y: rshift.map(val => val - 1),
+        type: 'scatter',
+        mode: 'lines+markers',
+        showlegend: false
+      };
+
+      const intDistYOverlayTrace = {
+        x: [f_user,f_user],
+        y: [0,shiftint-1],
+        mode: 'lines',
+        line: {color: 'black', width: 1, dash: 'dash'},
+        hoverinfo: 'skip',
+        name: ' ',
+        showlegend: false
+      };
+
+      const intDistXOverlayTrace = {
+        x: [0,f_user],
+        y: [shiftint-1,shiftint-1],
+        mode: 'lines',
+        line: {color: 'black', width: 1, dash: 'dash'},
+        hoverinfo: 'skip',
+        name: ' ',
+        showlegend: false
+      };
+
+      const fpeDistXOverlayTrace = {
+        x: [0,f_user],
+        y: [rint-1,rint-1],
+        mode: 'lines',
+        line: {color: 'black', width: 1, dash: 'dash'},
+        hoverinfo: 'skip',
+        name: ' ',
+        showlegend: false
+      };
+
+      const fpeTrace = {
+        x: freqs,
+        y: rr.map(val => val - 1),
+        type: 'scatter',
+        mode: 'lines', // or 'lines+markers' if you want markers too
+        name: 'rint', // label for legend
+        showlegend: false,
+        line: { width: 2, color: 'black' } // optional styling
+      };
+
+      data5 = [distTrace, intDistXOverlayTrace, intDistYOverlayTrace, fpeTrace, fpeDistXOverlayTrace];
+
       // Set image plot style
       var layout1 = {
         width: 500,  // set width
@@ -763,7 +817,7 @@ function plotGraphs() {
           y: 1.3,
           xref: 'paper',
           yref: 'paper',
-          text: 'Source Heliocentric Distance: '+rint.toFixed(2)+' Rsun',
+          text: 'Source Heliocentric Distance: '+rint.toFixed(2)+' R<sub>☉</sub>',
           showarrow: false,
         },
         {
@@ -830,8 +884,9 @@ function plotGraphs() {
           y: 1,
           xref: 'paper',
           yref: 'paper',
-          text: 'Strong Scattering Region',
+          text: 'Radius of Last Scattering',
           showarrow: false,
+          showlegend: false,
           font: {
             color: 'red', // Set the color property to 'red'
           },
@@ -845,11 +900,11 @@ function plotGraphs() {
         width: 480,  // set width
         height: 500, // set height
         aspectratio: { x: 1, y: 1 }, // Set equal aspect ratio for x and y
-        showlegend: false,
+        showlegend: true,
         annotations: allAnnotations,
         pad: 0,
         xaxis: {
-          title: 'X [Rsun]',
+          title: 'X [R<sub>☉</sub>]',
           ticks: 'inside',
           //tickvals: [-80, -60, -40, -20, 0, 20, 40, 60, 80],
           dtick: Math.round((shiftint * 1.2 * 2) / 5),
@@ -858,7 +913,7 @@ function plotGraphs() {
           showline: true,
         },
         yaxis: {
-          title: 'Z [Rsun]',
+          title: 'Z [R<sub>☉</sub>]',
           ticks: 'inside',
           //tickvals: [-80 -60, -40, -20, 0, 20, 40, 60, 80],
           dtick: Math.round((shiftint * 1.2 * 2) / 5),
@@ -906,6 +961,59 @@ function plotGraphs() {
         ],
       };
 
+      // Set distance plot style
+      var layout5 = {
+        width: 500,  // set width
+        height: 500, // set height
+        aspectratio: { x: 1, y: 1 }, // Set equal aspect ratio for x and y
+        xaxis: {
+          title: 'Frequency [MHz]',
+          dtick: 1, // show only powers of 10 labels
+          ticks: 'inside',
+          type: 'log',
+          linewidth: 2,
+          range: [-1, 2.53],
+          showline: true,
+        },
+        yaxis: {
+          title: 'Distance [r/R<sub>☉</sub> - 1]',
+          type: 'log',
+          dtick: 1, // show only powers of 10 labels
+          ticks: 'inside',
+          linewidth: 2,
+          autorange: true,
+          showline: true, 
+        },
+        dragmode: false,
+        // Add annotation for decay value
+        annotations: [
+          {
+            x: 1,
+            y: 0.95,
+            xref: 'paper',
+            yref: 'paper',
+            text: 'Apparent Source Height: ' + (shiftint-1).toFixed(2) + ' R<sub>☉</sub>',
+            showarrow: false,
+          },
+          {
+            x: 1,
+            y: 1,
+            xref: 'paper',
+            yref: 'paper',
+            text: 'True Source Height: ' + (rint-1).toFixed(2) + ' R<sub>☉</sub>',
+            showarrow: false,
+          },
+          {
+            x: 1,
+            y: 0.9,
+            xref: 'paper',
+            yref: 'paper',
+            text: 'Shift: ' + (shiftint-rint).toFixed(2) + ' R<sub>☉</sub>',
+            showarrow: false,
+          },
+        ],
+      };
+
       const config = {
         displayModeBar: true,
         toImageButtonOptions: {
@@ -927,6 +1035,7 @@ function plotGraphs() {
       Plotly.newPlot('posDiv', data3, layout3, config2);
       Plotly.addTraces('posDiv', data3b);
       Plotly.newPlot('decayDiv', data4, layout4, config2);
+      Plotly.newPlot('distDiv', data5, layout5, config2);
     }
            
   // Call the async function
