@@ -33,6 +33,7 @@
     position: absolute;
     top: 450px;
     left: 875px;
+    z-index: 1;
 }
 
 #posDiv {
@@ -47,7 +48,13 @@
     top: 35px;
     left: 875px;
     padding-bottom: 100px;
-    z-index: 1;
+    z-index: 2;
+}
+
+#distDiv {
+    position: absolute;
+    top: 865px;
+    left: 875px;
 }
 
 h1 {
