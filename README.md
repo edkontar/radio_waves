@@ -1,8 +1,9 @@
 # radio_waves
 radio wave transport in solar wind including anisotropic scattering 
 
-Ray tracing and scattering based on the following paper:
-http://adsabs.harvard.edu/abs/2019arXiv190900340K
+Ray tracing and scattering based on the following papers:
+https://ui.adsabs.harvard.edu/abs/2019ApJ...884..122K/abstract
+https://ui.adsabs.harvard.edu/abs/2023ApJ...956..112K/abstract
 
 Calling sequence, e.g. for LOFAR observations:
 
