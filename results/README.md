@@ -1,4 +1,7 @@
 # radio_waves
+
+updated October 2023
+
 Results of radio wave transport simulations in the solar corona and solar wind between 0.1 and 1 au. For details see 
 https://ui.adsabs.harvard.edu/abs/2023ApJ...956..112K/abstract
 or ApJ paper:
@@ -6,5 +9,12 @@ https://doi.org/10.3847/1538-4357/acf6c1
 
 file new_all_results_F_final.json has Fundamental emission results and new_all_results_H_final.json for Harmonic
 
-updated October 2023
+Updated March 2024 
+
+Since these simulations can be extensive and take substantial time to run, 
+so we have developed a publicly available web-based tool to visualize the results:  
+https://cesra.net/?p=3723
+
+
+
 
